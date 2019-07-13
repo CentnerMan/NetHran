@@ -13,6 +13,7 @@ import javafx.scene.control.TextField;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ResourceBundle;
@@ -22,7 +23,12 @@ public class MainController implements Initializable {
     TextField tfFileName;
 
     @FXML
-    ListView<String> filesList;
+    ListView<String> localFilesList;
+
+    @FXML
+    ListView<String> remoteFilesList;
+
+    private static final String LOCAL_STORAGE = "client_storage";
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -33,7 +39,7 @@ public class MainController implements Initializable {
                     AbstractMessage am = Network.readObject();
                     if (am instanceof FileMessage) {
                         FileMessage fm = (FileMessage) am;
-                        Files.write(Paths.get("client_storage/" + fm.getFilename()), fm.getData(), StandardOpenOption.CREATE);
+                        Files.write(Paths.get(LOCAL_STORAGE + "/" + fm.getFilename()), fm.getData(), StandardOpenOption.CREATE);
                         refreshLocalFilesList();
                     }
                 }
@@ -49,17 +55,19 @@ public class MainController implements Initializable {
     }
 
     public void pressOnDownloadBtn(ActionEvent actionEvent) {
-        if (tfFileName.getLength() > 0) {
-            Network.sendMsg(new FileRequest(tfFileName.getText()));
-            tfFileName.clear();
-        }
+        String fileName = remoteFilesList.getSelectionModel().getSelectedItem();
+//        if (tfFileName.getLength() > 0) {
+//            Network.sendMsg(new FileRequest(tfFileName.getText()));
+//            tfFileName.clear();
+//        }
+        Network.sendMsg(new FileRequest(fileName));
     }
 
     public void refreshLocalFilesList() {
         updateUI(() -> {
             try {
-                filesList.getItems().clear();
-                Files.list(Paths.get("client_storage")).map(p -> p.getFileName().toString()).forEach(o -> filesList.getItems().add(o));
+                localFilesList.getItems().clear();
+                Files.list(Paths.get(LOCAL_STORAGE)).map(p -> p.getFileName().toString()).forEach(o -> localFilesList.getItems().add(o));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -72,5 +80,31 @@ public class MainController implements Initializable {
         } else {
             Platform.runLater(r);
         }
+    }
+
+    public void pressOnUploadBtn(ActionEvent actionEvent) {
+        String fileName = localFilesList.getSelectionModel().getSelectedItem();
+        if (fileName != null) {
+            Path path = Paths.get(LOCAL_STORAGE + "/" + fileName);
+            System.out.println(path);
+            try {
+                Network.sendMsg(new FileMessage(path));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void pressOnLocalDeleteBtn(ActionEvent actionEvent) {
+    }
+
+    public void pressOnLocalRefreshBtn(ActionEvent actionEvent) {
+        refreshLocalFilesList();
+    }
+
+    public void pressOnRemoteDeleteBtn(ActionEvent actionEvent) {
+    }
+
+    public void pressOnRemoteRefreshBtn(ActionEvent actionEvent) {
     }
 }
