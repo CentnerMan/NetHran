@@ -1,14 +1,11 @@
 package ru.vlsv.client;
 
-import ru.vlsv.common.AbstractMessage;
-import ru.vlsv.common.FileMessage;
-import ru.vlsv.common.FileRequest;
+import ru.vlsv.common.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.net.URL;
@@ -16,11 +13,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
-    @FXML
-    TextField tfFileName;
 
     @FXML
     ListView<String> localFilesList;
@@ -41,6 +37,17 @@ public class MainController implements Initializable {
                         FileMessage fm = (FileMessage) am;
                         Files.write(Paths.get(LOCAL_STORAGE + "/" + fm.getFilename()), fm.getData(), StandardOpenOption.CREATE);
                         refreshLocalFilesList();
+                    } else if (am instanceof ListFilesMessage) {
+                        // Получили список файлов
+                        ListFilesMessage lfm = (ListFilesMessage) am;
+                        ArrayList<String> remoteFiles = lfm.getFileList();
+                        updateUI(() -> {
+                            remoteFilesList.getItems().clear();
+//                                for (int i = 0; i < remoteFiles.size(); i++) {
+//                                    remoteFilesList.getItems().add(remoteFiles.get(i));
+//                                }
+                            remoteFiles.forEach(o -> remoteFilesList.getItems().add(o));
+                        });
                     }
                 }
             } catch (ClassNotFoundException | IOException e) {
@@ -52,14 +59,11 @@ public class MainController implements Initializable {
         t.setDaemon(true);
         t.start();
         refreshLocalFilesList();
+        refreshRemoteFileList();
     }
 
     public void pressOnDownloadBtn(ActionEvent actionEvent) {
         String fileName = remoteFilesList.getSelectionModel().getSelectedItem();
-//        if (tfFileName.getLength() > 0) {
-//            Network.sendMsg(new FileRequest(tfFileName.getText()));
-//            tfFileName.clear();
-//        }
         Network.sendMsg(new FileRequest(fileName));
     }
 
@@ -74,6 +78,10 @@ public class MainController implements Initializable {
         });
     }
 
+    public void refreshRemoteFileList() {
+        Network.sendMsg(new ListFilesRequest());
+    }
+
     public static void updateUI(Runnable r) {
         if (Platform.isFxApplicationThread()) {
             r.run();
@@ -86,7 +94,7 @@ public class MainController implements Initializable {
         String fileName = localFilesList.getSelectionModel().getSelectedItem();
         if (fileName != null) {
             Path path = Paths.get(LOCAL_STORAGE + "/" + fileName);
-            System.out.println(path);
+//            System.out.println(path);
             try {
                 Network.sendMsg(new FileMessage(path));
             } catch (IOException e) {
@@ -96,6 +104,18 @@ public class MainController implements Initializable {
     }
 
     public void pressOnLocalDeleteBtn(ActionEvent actionEvent) {
+        String fileName = localFilesList.getSelectionModel().getSelectedItem();
+        if (fileName != null) {
+            Path pathToDelete = Paths.get(LOCAL_STORAGE + "/" + fileName);
+            try {
+                Files.delete(pathToDelete);
+//                System.out.println("Удален файл " + fileName);
+            } catch (IOException e) {
+//                System.out.println("Что-то пошло не так :(");
+                e.printStackTrace();
+            }
+        }
+        refreshLocalFilesList();
     }
 
     public void pressOnLocalRefreshBtn(ActionEvent actionEvent) {
@@ -103,8 +123,11 @@ public class MainController implements Initializable {
     }
 
     public void pressOnRemoteDeleteBtn(ActionEvent actionEvent) {
+        String fileName = remoteFilesList.getSelectionModel().getSelectedItem();
+        Network.sendMsg(new DeleteFileRequest(fileName));
     }
 
     public void pressOnRemoteRefreshBtn(ActionEvent actionEvent) {
+        Network.sendMsg(new ListFilesRequest());
     }
 }

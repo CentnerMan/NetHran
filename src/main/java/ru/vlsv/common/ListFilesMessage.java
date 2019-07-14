@@ -1,6 +1,6 @@
 package ru.vlsv.common;
 
-import javafx.scene.control.ListView;
+import java.util.ArrayList;
 
 /**
  * Java, NetHran.
@@ -12,13 +12,13 @@ import javafx.scene.control.ListView;
 
 public class ListFilesMessage extends AbstractMessage {
 
-    private String[] fileList;
+    private ArrayList<String> fileList;
 
-    public String[] getFileList() {
+    public ArrayList<String> getFileList() {
         return fileList;
     }
 
-    public ListFilesMessage(String[] fileList) {
+    public ListFilesMessage(ArrayList<String> fileList) {
         this.fileList = fileList;
     }
 }

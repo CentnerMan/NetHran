@@ -10,11 +10,7 @@
       style="-fx-background-color: linear-gradient(#fff 0%, #eee 10%, #ddd 90%, #bbb 100%);"
       xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="ru.vlsv.client.MainController">
-    <!--    <HBox>-->
-    <!--                <TextField fx:id="tfFileName" focusTraversable="false"-->
-    <!--                           promptText="Укажите имя файла на сервере, который хотите скачать" HBox.hgrow="ALWAYS"/>-->
-    <!--                <Button onAction="#pressOnDownloadBtn" text="Скачать"/>-->
-    <!--    </HBox>-->
+
     <HBox VBox.vgrow="ALWAYS">
         <VBox HBox.hgrow="ALWAYS">
             <Label prefWidth="300" text="Локальное хранилище" textAlignment="CENTER"/>
@@ -35,6 +31,5 @@
             </HBox>
         </VBox>
     </HBox>
-    <!--    <HBox VBox.vgrow="ALWAYS">-->
-    <!--    </HBox>-->
+
 </VBox>
