@@ -8,6 +8,5 @@ package ru.vlsv.common;
  * @link https://github.com/Centnerman
  */
 
-public class AutorisationRequest extends AbstractMessage{
-
+public class AuthorizationFalse extends AbstractMessage {
 }

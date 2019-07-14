@@ -54,4 +54,5 @@ public class Network {
         Object obj = in.readObject();
         return (AbstractMessage) obj;
     }
+
 }

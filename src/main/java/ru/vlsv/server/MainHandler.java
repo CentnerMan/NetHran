@@ -17,10 +17,25 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
 
     private static final String SERVER_STORAGE = "server_storage";
 
+    // тестируем процесс идентификации
+    private static String DEFAULT_LOGIN = "admin";
+    private static String DEFAULT_PASSWORD = "admin";
+
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         try {
-            if (msg instanceof FileRequest) {
+            if (msg instanceof AuthorizationRequest) {
+                AuthorizationRequest ar = (AuthorizationRequest) msg;
+                if (ar.getName().equals(DEFAULT_LOGIN) || ar.getPassword().equals(DEFAULT_PASSWORD)) {
+                    AuthorizationOK ok = new AuthorizationOK();
+                    ctx.writeAndFlush(ok);
+                } else {
+                    AuthorizationFalse authFalse = new AuthorizationFalse();
+                    ctx.writeAndFlush(authFalse);
+                }
+
+            } else if (msg instanceof FileRequest) {
                 FileRequest fr = (FileRequest) msg;
                 if (Files.exists(Paths.get(SERVER_STORAGE + "/" + fr.getFilename()))) {
                     FileMessage fm = new FileMessage(Paths.get(SERVER_STORAGE + "/" + fr.getFilename()));

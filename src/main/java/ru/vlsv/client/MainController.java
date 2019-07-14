@@ -72,6 +72,7 @@ public class MainController implements Initializable {
             try {
                 localFilesList.getItems().clear();
                 Files.list(Paths.get(LOCAL_STORAGE)).map(p -> p.getFileName().toString()).forEach(o -> localFilesList.getItems().add(o));
+//                localFilesList.getItems().addAll(String.valueOf(Files.list(Paths.get(LOCAL_STORAGE)).collect(Collectors.toList())));
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -8,5 +8,6 @@ package ru.vlsv.common;
  * @link https://github.com/Centnerman
  */
 
-public class AuthorisationOK {
+public class AuthorizationOK extends AbstractMessage {
+
 }
