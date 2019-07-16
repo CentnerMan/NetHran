@@ -37,8 +37,8 @@ public class LoginController implements Initializable {
     @FXML
     PasswordField userPassword;
 
-    @FXML
-    Label authResult;
+//    @FXML
+//    Label authResult;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

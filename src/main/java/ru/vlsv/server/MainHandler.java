@@ -50,10 +50,10 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
                 } else {
                     Files.write(Paths.get(SERVER_STORAGE + "/" + fm.getFilename()), fm.getData(), StandardOpenOption.CREATE);
                 }
-                RefreshServerFileList(ctx);
+                refreshServerFileList(ctx);
 
             } else if (msg instanceof ListFilesRequest) {
-                RefreshServerFileList(ctx);
+                refreshServerFileList(ctx);
 
             } else if (msg instanceof DeleteFileRequest) {
                 DeleteFileRequest dfr = (DeleteFileRequest) msg;
@@ -65,7 +65,7 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
 //                    System.out.println("Что-то пошло не так :(");
                     e.printStackTrace();
                 }
-                RefreshServerFileList(ctx);
+                refreshServerFileList(ctx);
             }
 
         } finally {
@@ -73,12 +73,12 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    private void RefreshServerFileList(ChannelHandlerContext ctx) {
-        ListFilesMessage lfm = new ListFilesMessage(CreateServerFileList());
+    private void refreshServerFileList(ChannelHandlerContext ctx) {
+        ListFilesMessage lfm = new ListFilesMessage(createServerFileList());
         ctx.writeAndFlush(lfm);
     }
 
-    private ArrayList<String> CreateServerFileList() {
+    private ArrayList<String> createServerFileList() {
         ArrayList<String> serverFiles = new ArrayList<>();
         File folder = new File(SERVER_STORAGE);
         File[] files = folder.listFiles();

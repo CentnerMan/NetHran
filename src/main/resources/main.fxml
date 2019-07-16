@@ -10,21 +10,21 @@
 
     <HBox VBox.vgrow="ALWAYS">
         <VBox HBox.hgrow="ALWAYS">
-            <Label maxWidth="1.7976931348623157E308" prefWidth="300" text="Локальное хранилище" textAlignment="CENTER" />
+            <Label minWidth="300.0" prefWidth="300.0" alignment="CENTER" text="Локальное хранилище" textAlignment="CENTER" />
             <ListView fx:id="localFilesList" />
             <HBox>
-                <Button onAction="#pressOnUploadBtn" text="Отправить файл" textAlignment="CENTER" />
-                <Button onAction="#pressOnLocalDeleteBtn" text="Удалить файл" textAlignment="CENTER" />
-                <Button onAction="#pressOnLocalRefreshBtn" text="Обновить" textAlignment="CENTER" />
+                <Button minWidth="120.0" onAction="#pressOnUploadBtn" prefWidth="120.0" text="Отправить файл" textAlignment="CENTER" />
+                <Button minWidth="100.0" onAction="#pressOnLocalDeleteBtn" prefWidth="100.0" text="Удалить файл" textAlignment="CENTER" />
+                <Button minWidth="80.0" onAction="#pressOnLocalRefreshBtn" prefWidth="80.0" text="Обновить" textAlignment="CENTER" />
             </HBox>
         </VBox>
         <VBox HBox.hgrow="ALWAYS">
-            <Label prefWidth="300" text="Сетевое хранилище" textAlignment="CENTER" />
+            <Label minWidth="300.0" prefWidth="300.0" alignment="CENTER"  text="Сетевое хранилище" textAlignment="CENTER" />
             <ListView fx:id="remoteFilesList" />
             <HBox>
-                <Button onAction="#pressOnDownloadBtn" text="Скачать файл" textAlignment="CENTER" />
-                <Button onAction="#pressOnRemoteDeleteBtn" text="Удалить файл" textAlignment="CENTER" />
-                <Button onAction="#pressOnRemoteRefreshBtn" text="Обновить" textAlignment="CENTER" />
+                <Button minWidth="120.0" onAction="#pressOnDownloadBtn" prefWidth="120.0" text="Скачать файл" textAlignment="CENTER" />
+                <Button minWidth="100.0" onAction="#pressOnRemoteDeleteBtn" prefWidth="100.0" text="Удалить файл" textAlignment="CENTER" />
+                <Button minWidth="80.0" onAction="#pressOnRemoteRefreshBtn" prefWidth="80.0" text="Обновить" textAlignment="CENTER" />
             </HBox>
         </VBox>
     </HBox>
