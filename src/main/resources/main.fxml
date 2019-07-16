@@ -6,28 +6,25 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="rootNode" alignment="CENTER" prefHeight="400.0" prefWidth="600.0"
-      style="-fx-background-color: linear-gradient(#fff 0%, #eee 10%, #ddd 90%, #bbb 100%);"
-      xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="ru.vlsv.client.MainController">
+<VBox fx:id="rootNode" alignment="CENTER" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: linear-gradient(#fff 0%, #eee 10%, #ddd 90%, #bbb 100%);" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.vlsv.client.MainController">
 
     <HBox VBox.vgrow="ALWAYS">
         <VBox HBox.hgrow="ALWAYS">
-            <Label prefWidth="300" text="Локальное хранилище" textAlignment="CENTER"/>
-            <ListView fx:id="localFilesList"/>
+            <Label maxWidth="1.7976931348623157E308" prefWidth="300" text="Локальное хранилище" textAlignment="CENTER" />
+            <ListView fx:id="localFilesList" />
             <HBox>
-                <Button onAction="#pressOnUploadBtn" text="Отправить файл" textAlignment="CENTER"/>
-                <Button onAction="#pressOnLocalDeleteBtn" text="Удалить файл" textAlignment="CENTER"/>
-                <Button onAction="#pressOnLocalRefreshBtn" text="Обновить" textAlignment="CENTER"/>
+                <Button onAction="#pressOnUploadBtn" text="Отправить файл" textAlignment="CENTER" />
+                <Button onAction="#pressOnLocalDeleteBtn" text="Удалить файл" textAlignment="CENTER" />
+                <Button onAction="#pressOnLocalRefreshBtn" text="Обновить" textAlignment="CENTER" />
             </HBox>
         </VBox>
         <VBox HBox.hgrow="ALWAYS">
-            <Label prefWidth="300" text="Сетевое хранилище" textAlignment="CENTER"/>
-            <ListView fx:id="remoteFilesList"/>
+            <Label prefWidth="300" text="Сетевое хранилище" textAlignment="CENTER" />
+            <ListView fx:id="remoteFilesList" />
             <HBox>
-                <Button onAction="#pressOnDownloadBtn" text="Скачать файл" textAlignment="CENTER"/>
-                <Button onAction="#pressOnRemoteDeleteBtn" text="Удалить файл" textAlignment="CENTER"/>
-                <Button onAction="#pressOnRemoteRefreshBtn" text="Обновить" textAlignment="CENTER"/>
+                <Button onAction="#pressOnDownloadBtn" text="Скачать файл" textAlignment="CENTER" />
+                <Button onAction="#pressOnRemoteDeleteBtn" text="Удалить файл" textAlignment="CENTER" />
+                <Button onAction="#pressOnRemoteRefreshBtn" text="Обновить" textAlignment="CENTER" />
             </HBox>
         </VBox>
     </HBox>

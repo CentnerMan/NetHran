@@ -28,18 +28,34 @@ public class AuthService {
         try {
             rs = stmt.executeQuery(sql);
             if (rs.next()) {
-                return pa
-            }
 
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static synchronized void addUser(String login, String pass) {
-        String sql = String.format("INSERT INTO main (login, password)" +
-                "VALUES ('%s', '%s')", login, pass);
+    public static synchronized void addUser(String login, String password) {
+
+        // Создаем таблицу, если ее нет
+
+        String sql = String.format("CREATE TABLE IF NOT EXISTS main\n"
+                + "(\n"
+                + "  id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,\n"
+                + "  login TEXT UNIQUE NOT NULL,\n"
+                + "  password TEXT NOT NULL,\n"
+                + ")");
+        try {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Добавляем пользователя
+
+        sql = String.format("INSERT INTO main (login, password)" +
+                "VALUES ('%s', '%s')", login, password);
         try {
             stmt.execute(sql);
         } catch (SQLException e) {

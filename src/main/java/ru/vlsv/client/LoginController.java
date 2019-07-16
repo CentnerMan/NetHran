@@ -51,19 +51,21 @@ public class LoginController implements Initializable {
                         // Авторизация удалась - переключаем сцену
                         System.out.println("Авторизация удалась");
                         changeSceneToMain();
+                        break;
                     } else if (am instanceof AuthorizationFalse) {
                         // Ошибка авторизации - очищаем поля ввода.
                         System.out.println("Ошибка авторизации");
-                        userLogin.setText("");
+                        userLogin.clear();
                         userPassword.clear();
-                        authResult.setText("Auth False");
+//                        authResult.setText("Auth False");
                     }
                 }
             } catch (ClassNotFoundException | IOException e) {
                 e.printStackTrace();
-            } finally {
-                Network.stop();
             }
+//            finally {
+//                Network.stop();
+//            }
         });
         t.setDaemon(true);
         t.start();

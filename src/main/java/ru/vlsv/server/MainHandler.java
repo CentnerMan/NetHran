@@ -43,7 +43,6 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
                 }
 
             } else if (msg instanceof FileMessage) {
-                // Что делать если прилетел файл ??
                 FileMessage fm = (FileMessage) msg;
                 Path pathToNewFile = Paths.get(SERVER_STORAGE + "/" + fm.getFilename());
                 if (Files.exists(pathToNewFile)) {
