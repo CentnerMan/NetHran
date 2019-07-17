@@ -18,8 +18,8 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
     private static final String SERVER_STORAGE = "server_storage";
 
     // тестируем процесс идентификации
-    private static String DEFAULT_LOGIN = "admin";
-    private static String DEFAULT_PASSWORD = "admin";
+    private static final String DEFAULT_LOGIN = "admin";
+    private static final String DEFAULT_PASSWORD = "admin";
 
 
     @Override
