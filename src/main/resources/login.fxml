@@ -12,7 +12,7 @@
 <TextField fx:id="userLogin" layoutX="24.0" layoutY="31.0" prefWidth="200.0" promptText="Введите логин" />
 <Label layoutX="24.0" layoutY="63.0" text="Password:" />
 <PasswordField fx:id="userPassword" layoutX="24.0" layoutY="86.0" prefWidth="200.0" promptText="Введите пароль" />
-<Button layoutX="168.0" layoutY="124.0" mnemonicParsing="false" onAction="#pressLoginBtn" text="Log In" textAlignment="CENTER" />
+<Button defaultButton="true" layoutX="168.0" layoutY="124.0" mnemonicParsing="false" onAction="#pressLoginBtn" text="Log In" textAlignment="CENTER" />
 <!--<Label fx:id="authResult" layoutX="24.0" layoutY="124.0" prefHeight="25.0" prefWidth="133.0" text="Авторизуйтесь" />-->
 
 </AnchorPane>
