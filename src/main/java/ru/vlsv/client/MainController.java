@@ -38,14 +38,10 @@ public class MainController implements Initializable {
                         Files.write(Paths.get(LOCAL_STORAGE + "/" + fm.getFilename()), fm.getData(), StandardOpenOption.CREATE);
                         refreshLocalFilesList();
                     } else if (am instanceof ListFilesMessage) {
-                        // Получили список файлов
                         ListFilesMessage lfm = (ListFilesMessage) am;
                         ArrayList<String> remoteFiles = lfm.getFileList();
                         updateUI(() -> {
                             remoteFilesList.getItems().clear();
-//                                for (int i = 0; i < remoteFiles.size(); i++) {
-//                                    remoteFilesList.getItems().add(remoteFiles.get(i));
-//                                }
                             remoteFiles.forEach(o -> remoteFilesList.getItems().add(o));
                         });
                     }
@@ -67,23 +63,22 @@ public class MainController implements Initializable {
         Network.sendMsg(new FileRequest(fileName));
     }
 
-    public void refreshLocalFilesList() {
+    private void refreshLocalFilesList() {
         updateUI(() -> {
             try {
                 localFilesList.getItems().clear();
                 Files.list(Paths.get(LOCAL_STORAGE)).map(p -> p.getFileName().toString()).forEach(o -> localFilesList.getItems().add(o));
-//                localFilesList.getItems().addAll(String.valueOf(Files.list(Paths.get(LOCAL_STORAGE)).collect(Collectors.toList())));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
     }
 
-    public void refreshRemoteFileList() {
+    private void refreshRemoteFileList() {
         Network.sendMsg(new ListFilesRequest());
     }
 
-    public static void updateUI(Runnable r) {
+    private static void updateUI(Runnable r) {
         if (Platform.isFxApplicationThread()) {
             r.run();
         } else {
@@ -95,7 +90,6 @@ public class MainController implements Initializable {
         String fileName = localFilesList.getSelectionModel().getSelectedItem();
         if (fileName != null) {
             Path path = Paths.get(LOCAL_STORAGE + "/" + fileName);
-//            System.out.println(path);
             try {
                 Network.sendMsg(new FileMessage(path));
             } catch (IOException e) {
@@ -110,9 +104,7 @@ public class MainController implements Initializable {
             Path pathToDelete = Paths.get(LOCAL_STORAGE + "/" + fileName);
             try {
                 Files.delete(pathToDelete);
-//                System.out.println("Удален файл " + fileName);
             } catch (IOException e) {
-//                System.out.println("Что-то пошло не так :(");
                 e.printStackTrace();
             }
         }

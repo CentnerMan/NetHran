@@ -5,7 +5,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -60,14 +59,11 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
                 Path pathToDelete = Paths.get(SERVER_STORAGE + "/" + dfr.getFilename());
                 try {
                     Files.delete(pathToDelete);
-//                    System.out.println("Удален файл " + dfr.getFilename());
                 } catch (IOException e) {
-//                    System.out.println("Что-то пошло не так :(");
                     e.printStackTrace();
                 }
                 refreshServerFileList(ctx);
             }
-
         } finally {
             ReferenceCountUtil.release(msg);
         }
@@ -80,10 +76,10 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
 
     private ArrayList<String> createServerFileList() {
         ArrayList<String> serverFiles = new ArrayList<>();
-        File folder = new File(SERVER_STORAGE);
-        File[] files = folder.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            serverFiles.add(files[i].getName());
+        try {
+            Files.list(Paths.get(SERVER_STORAGE)).map(p -> p.getFileName().toString()).forEach(serverFiles::add);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return serverFiles;
     }

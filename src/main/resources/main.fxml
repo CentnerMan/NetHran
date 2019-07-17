@@ -5,12 +5,16 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <VBox fx:id="rootNode" alignment="CENTER" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: linear-gradient(#fff 0%, #eee 10%, #ddd 90%, #bbb 100%);" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.vlsv.client.MainController">
 
     <HBox VBox.vgrow="ALWAYS">
         <VBox HBox.hgrow="ALWAYS">
-            <Label minWidth="300.0" prefWidth="300.0" alignment="CENTER" text="Локальное хранилище" textAlignment="CENTER" />
+            <Label alignment="CENTER" minWidth="300.0" prefWidth="300.0" text="Локальное хранилище" textAlignment="CENTER">
+            <font>
+               <Font name="System Bold" size="14.0" />
+            </font></Label>
             <ListView fx:id="localFilesList" />
             <HBox>
                 <Button minWidth="120.0" onAction="#pressOnUploadBtn" prefWidth="120.0" text="Отправить файл" textAlignment="CENTER" />
@@ -19,7 +23,10 @@
             </HBox>
         </VBox>
         <VBox HBox.hgrow="ALWAYS">
-            <Label minWidth="300.0" prefWidth="300.0" alignment="CENTER"  text="Сетевое хранилище" textAlignment="CENTER" />
+            <Label alignment="CENTER" minWidth="300.0" prefWidth="300.0" text="Сетевое хранилище" textAlignment="CENTER">
+            <font>
+               <Font name="System Bold" size="14.0" />
+            </font></Label>
             <ListView fx:id="remoteFilesList" />
             <HBox>
                 <Button minWidth="120.0" onAction="#pressOnDownloadBtn" prefWidth="120.0" text="Скачать файл" textAlignment="CENTER" />

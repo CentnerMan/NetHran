@@ -15,6 +15,7 @@ public class MainClient extends Application {
         primaryStage.setTitle("Сетевое хранилище");
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 

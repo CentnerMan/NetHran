@@ -75,7 +75,7 @@ public class LoginController implements Initializable {
         Network.sendMsg(new AuthorizationRequest(userLogin.getText(), userPassword.getText()));
     }
 
-    public void changeSceneToMain() {
+    private void changeSceneToMain() {
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(new Runnable() {
                 @Override
