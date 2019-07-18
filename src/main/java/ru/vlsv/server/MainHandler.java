@@ -24,7 +24,7 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         try {
-//            AuthService.addUser(DEFAULT_LOGIN, DEFAULT_PASSWORD);
+//            AuthService.addUser("admin", "admin");
 //            AuthService.addUser("test", "test");
 //            AuthService.addUser("user", "user");
             if (!authorization) {
