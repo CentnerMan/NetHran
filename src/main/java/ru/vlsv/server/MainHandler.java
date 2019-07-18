@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,53 +17,73 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
 
     private static final String SERVER_STORAGE = "server_storage";
 
-    // тестируем процесс идентификации
-    private static final String DEFAULT_LOGIN = "admin";
-    private static final String DEFAULT_PASSWORD = "admin";
+    private String currentPath = SERVER_STORAGE + "/";
 
+    private boolean authorization = false; // Авторизация клиента
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         try {
-            if (msg instanceof AuthorizationRequest) {
-                AuthorizationRequest ar = (AuthorizationRequest) msg;
-                if (ar.getName().equals(DEFAULT_LOGIN) || ar.getPassword().equals(DEFAULT_PASSWORD)) {
-                    AuthorizationOK ok = new AuthorizationOK();
-                    ctx.writeAndFlush(ok);
-                } else {
-                    AuthorizationFalse authFalse = new AuthorizationFalse();
-                    ctx.writeAndFlush(authFalse);
-                }
+//            AuthService.addUser(DEFAULT_LOGIN, DEFAULT_PASSWORD);
+//            AuthService.addUser("test", "test");
+//            AuthService.addUser("user", "user");
+            if (!authorization) {
+                if (msg instanceof AuthorizationRequest) {
+                    AuthorizationRequest ar = (AuthorizationRequest) msg;
 
-            } else if (msg instanceof FileRequest) {
-                FileRequest fr = (FileRequest) msg;
-                if (Files.exists(Paths.get(SERVER_STORAGE + "/" + fr.getFilename()))) {
-                    FileMessage fm = new FileMessage(Paths.get(SERVER_STORAGE + "/" + fr.getFilename()));
-                    ctx.writeAndFlush(fm);
-                }
+                    String currentLogin = ar.getName(); // Определяем текущего пользователя
 
-            } else if (msg instanceof FileMessage) {
-                FileMessage fm = (FileMessage) msg;
-                Path pathToNewFile = Paths.get(SERVER_STORAGE + "/" + fm.getFilename());
-                if (Files.exists(pathToNewFile)) {
-                    System.out.println("Файл с именем " + fm.getFilename() + " уже существует");
-                } else {
-                    Files.write(Paths.get(SERVER_STORAGE + "/" + fm.getFilename()), fm.getData(), StandardOpenOption.CREATE);
-                }
-                refreshServerFileList(ctx);
+                    if (AuthService.isExist(currentLogin) && ar.getPassword().equals(AuthService.getPass(currentLogin))) {
 
-            } else if (msg instanceof ListFilesRequest) {
-                refreshServerFileList(ctx);
+                        AuthorizationOK ok = new AuthorizationOK();
+                        ctx.writeAndFlush(ok);
+                        authorization = true;
 
-            } else if (msg instanceof DeleteFileRequest) {
-                DeleteFileRequest dfr = (DeleteFileRequest) msg;
-                Path pathToDelete = Paths.get(SERVER_STORAGE + "/" + dfr.getFilename());
-                try {
-                    Files.delete(pathToDelete);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                        currentPath = currentPath + currentLogin; // Определяем рабочий каталог
+
+                        // Если нет рабочего каталога - создаем
+                        File userDir = new File(currentPath);
+                        if (!userDir.exists()) {
+                            if (userDir.mkdir()) {
+                                System.out.println("Папка пользователя создана");
+                            } else System.out.println("Ошибка создания папки");
+                        }
+                    } else {
+                        AuthorizationFalse authFalse = new AuthorizationFalse();
+                        ctx.writeAndFlush(authFalse);
+                    }
                 }
-                refreshServerFileList(ctx);
+            } else {
+                if (msg instanceof FileRequest) {
+                    FileRequest fr = (FileRequest) msg;
+                    if (Files.exists(Paths.get(currentPath + "/" + fr.getFilename()))) {
+                        FileMessage fm = new FileMessage(Paths.get(currentPath + "/" + fr.getFilename()));
+                        ctx.writeAndFlush(fm);
+                    }
+
+                } else if (msg instanceof FileMessage) {
+                    FileMessage fm = (FileMessage) msg;
+                    Path pathToNewFile = Paths.get(currentPath + "/" + fm.getFilename());
+                    if (Files.exists(pathToNewFile)) {
+                        System.out.println("Файл с именем " + fm.getFilename() + " уже существует");
+                    } else {
+                        Files.write(Paths.get(currentPath + "/" + fm.getFilename()), fm.getData(), StandardOpenOption.CREATE);
+                    }
+                    refreshServerFileList(ctx);
+
+                } else if (msg instanceof ListFilesRequest) {
+                    refreshServerFileList(ctx);
+
+                } else if (msg instanceof DeleteFileRequest) {
+                    DeleteFileRequest dfr = (DeleteFileRequest) msg;
+                    Path pathToDelete = Paths.get(currentPath + "/" + dfr.getFilename());
+                    try {
+                        Files.delete(pathToDelete);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    refreshServerFileList(ctx);
+                }
             }
         } finally {
             ReferenceCountUtil.release(msg);
@@ -77,7 +98,7 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
     private ArrayList<String> createServerFileList() {
         ArrayList<String> serverFiles = new ArrayList<>();
         try {
-            Files.list(Paths.get(SERVER_STORAGE)).map(p -> p.getFileName().toString()).forEach(serverFiles::add);
+            Files.list(Paths.get(currentPath)).map(p -> p.getFileName().toString()).forEach(serverFiles::add);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -16,6 +16,7 @@ public class Server {
     public void run() throws Exception {
         EventLoopGroup mainGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
+        AuthService.connectDB();
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(mainGroup, workerGroup)
@@ -35,6 +36,7 @@ public class Server {
         } finally {
             mainGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
+            AuthService.disconnectDB();
         }
     }
 
