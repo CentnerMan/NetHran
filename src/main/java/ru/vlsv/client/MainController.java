@@ -30,6 +30,7 @@ public class MainController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         Thread t = new Thread(() -> {
             try {
+                Tools.createDirIfNotExist(LOCAL_STORAGE);
                 while (true) {
                     AbstractMessage am = Network.readObject();
                     if (am instanceof FileMessage) {

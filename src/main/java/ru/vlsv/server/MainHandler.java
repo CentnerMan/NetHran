@@ -27,6 +27,8 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
 //            AuthService.addUser("admin", "admin");
 //            AuthService.addUser("test", "test");
 //            AuthService.addUser("user", "user");
+            Tools.createDirIfNotExist(SERVER_STORAGE); //Создаем общую папку на сервере
+
             if (!authorization) {
                 if (msg instanceof AuthorizationRequest) {
                     AuthorizationRequest ar = (AuthorizationRequest) msg;
@@ -41,13 +43,9 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
 
                         currentPath = currentPath + currentLogin; // Определяем рабочий каталог
 
-                        // Если нет рабочего каталога - создаем
-                        File userDir = new File(currentPath);
-                        if (!userDir.exists()) {
-                            if (userDir.mkdir()) {
-                                System.out.println("Папка пользователя создана");
-                            } else System.out.println("Ошибка создания папки");
-                        }
+                        // Если нет рабочего каталога пользователя - создаем
+                       Tools.createDirIfNotExist(currentPath);
+
                     } else {
                         AuthorizationFalse authFalse = new AuthorizationFalse();
                         ctx.writeAndFlush(authFalse);
