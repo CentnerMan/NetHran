@@ -63,9 +63,6 @@ public class LoginController implements Initializable {
             } catch (ClassNotFoundException | IOException e) {
                 e.printStackTrace();
             }
-//            finally {
-//                Network.stop();
-//            }
         });
         t.setDaemon(true);
         t.start();
