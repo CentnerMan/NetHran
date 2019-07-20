@@ -5,11 +5,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class FileMessage extends AbstractMessage {
-    private String filename;
+    private String fileName;
     private byte[] data;
 
-    public String getFilename() {
-        return filename;
+    public String getFileName() {
+        return fileName;
     }
 
     public byte[] getData() {
@@ -17,7 +17,7 @@ public class FileMessage extends AbstractMessage {
     }
 
     public FileMessage(Path path) throws IOException {
-        filename = path.getFileName().toString();
+        fileName = path.getFileName().toString();
         data = Files.readAllBytes(path);
     }
 }

@@ -3,6 +3,7 @@ package ru.vlsv.client;
 import ru.vlsv.common.AbstractMessage;
 import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
+import ru.vlsv.common.Tools;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -14,9 +15,9 @@ public class Network {
 
     public static void start() {
         try {
-            socket = new Socket("localhost", 8189);
+            socket = new Socket("localhost", Tools.PORT);
             out = new ObjectEncoderOutputStream(socket.getOutputStream());
-            in = new ObjectDecoderInputStream(socket.getInputStream(), 50 * 1024 * 1024);
+            in = new ObjectDecoderInputStream(socket.getInputStream(), Tools.MAX_OBJECT_SIZE);
         } catch (IOException e) {
             e.printStackTrace();
         }
