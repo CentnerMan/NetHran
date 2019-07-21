@@ -7,7 +7,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
@@ -37,9 +36,6 @@ public class LoginController implements Initializable {
     @FXML
     PasswordField userPassword;
 
-//    @FXML
-//    Label authResult;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Network.start();
@@ -57,7 +53,6 @@ public class LoginController implements Initializable {
                         System.out.println("Ошибка авторизации");
                         userLogin.clear();
                         userPassword.clear();
-//                        authResult.setText("Auth False");
                     }
                 }
             } catch (ClassNotFoundException | IOException e) {

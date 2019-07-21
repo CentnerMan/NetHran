@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 public class ListFilesMessage extends AbstractMessage {
 
+    private static final long serialVersionUID = -1822410006238198933L;
     private ArrayList<String> fileList;
 
     public ArrayList<String> getFileList() {

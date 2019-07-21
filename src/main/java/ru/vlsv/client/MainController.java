@@ -1,12 +1,14 @@
 package ru.vlsv.client;
 
 import ru.vlsv.common.*;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
 
+import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.URL;
@@ -130,7 +132,6 @@ public class MainController implements Initializable {
                 // Данные части файла
                 byte[] data = new byte[Math.min((int) Files.size(path), MAX_FILE_SIZE)]; // Если файл в один кусок - массив размером с файл
                 RandomAccessFile raf = new RandomAccessFile(path.toFile(), "r");
-
                 for (int i = 0; i < numParts; i++) {
                     raf.seek((long) i * MAX_FILE_SIZE);
                     int bytesRead = raf.read(data);

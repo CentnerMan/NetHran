@@ -9,5 +9,5 @@ package ru.vlsv.common;
  */
 
 public class AuthorizationOK extends AbstractMessage {
-
+    private static final long serialVersionUID = -8960503529456453751L;
 }

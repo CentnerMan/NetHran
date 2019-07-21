@@ -9,4 +9,5 @@ package ru.vlsv.common;
  */
 
 public class AuthorizationFalse extends AbstractMessage {
+    private static final long serialVersionUID = -8573896186075731720L;
 }

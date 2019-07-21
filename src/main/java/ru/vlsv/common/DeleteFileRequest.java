@@ -9,6 +9,7 @@ package ru.vlsv.common;
  */
 
 public class DeleteFileRequest extends AbstractMessage {
+    private static final long serialVersionUID = -5748364821177024097L;
     private String filename;
 
     public String getFilename() {
