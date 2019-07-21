@@ -1,23 +1,41 @@
 package ru.vlsv.common;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class FileMessage extends AbstractMessage {
-    private String filename;
-    private byte[] data;
+/**
+ * Java, NetHran.
+ *
+ * @author Anatoly Lebedev
+ * @version 1.0.0 20.07.2019
+ * @link https://github.com/Centnerman
+ */
 
-    public String getFilename() {
-        return filename;
+public class FileMessage extends AbstractMessage {
+    private String fileName;
+    private byte[] data;
+    private int partNum;
+    private int partCount;
+
+    public String getFileName() {
+        return fileName;
     }
 
     public byte[] getData() {
         return data;
     }
 
-    public FileMessage(Path path) throws IOException {
-        filename = path.getFileName().toString();
-        data = Files.readAllBytes(path);
+    public int getPartNum() {
+        return partNum;
+    }
+
+    public int getPartCount() {
+        return partCount;
+    }
+
+    public FileMessage(Path path, byte[] data, int partNum, int partCount) {
+        this.fileName = path.getFileName().toString();
+        this.data = data;
+        this.partNum = partNum;
+        this.partCount = partCount;
     }
 }
