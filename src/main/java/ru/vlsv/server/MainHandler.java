@@ -10,7 +10,6 @@ import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 
 import static ru.vlsv.common.Tools.MAX_FILE_SIZE;
@@ -44,9 +43,7 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
                         authorization = true;
 
                         currentPath = currentPath + currentLogin; // Определяем рабочий каталог
-
-                        // Если нет рабочего каталога пользователя - создаем
-                        Tools.createDirIfNotExist(currentPath);
+                        Tools.createDirIfNotExist(currentPath); // Если нет рабочего каталога пользователя - создаем
 
                     } else {
                         AuthorizationFalse authFalse = new AuthorizationFalse();
@@ -57,24 +54,12 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
                 if (msg instanceof FileRequest) {
                     FileRequest fr = (FileRequest) msg;
                     if (Files.exists(Paths.get(currentPath + "/" + fr.getFilename()))) {
-//                        FileMessage fm = new FileMessage(Paths.get(currentPath + "/" + fr.getFileName()));
-//                        ctx.writeAndFlush(fm);
-                        sendBigFile(ctx, fr.getFilename());
+                        sendFile(ctx, fr.getFilename());
                     }
 
                 } else if (msg instanceof FileMessage) {
                     FileMessage fm = (FileMessage) msg;
-                    Path pathToNewFile = Paths.get(currentPath + "/" + fm.getFileName());
-                    if (Files.exists(pathToNewFile)) {
-                        System.out.println("Файл с именем " + fm.getFileName() + " уже существует");
-                    } else {
-                        Files.write(Paths.get(currentPath + "/" + fm.getFileName()), fm.getData(), StandardOpenOption.CREATE);
-                    }
-                    refreshServerFileList(ctx);
-
-                } else if (msg instanceof BigFileMessage) {
-                    BigFileMessage bfm = (BigFileMessage) msg;
-                    boolean lastPart = receiveBigFile(bfm);
+                    boolean lastPart = receiveFile(fm);
                     if (lastPart) refreshServerFileList(ctx);
 
                 } else if (msg instanceof ListFilesRequest) {
@@ -111,24 +96,26 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
         return serverFiles;
     }
 
-    public void sendBigFile(ChannelHandlerContext ctx, String fileName) {
+    private void sendFile(ChannelHandlerContext ctx, String fileName) {
         if (fileName != null) {
             Path path = Paths.get(currentPath + "/" + fileName);
+//            System.out.println("Отправляем файл " + fileName);
             try {
-                int numParts = (int) Math.ceil((double) Files.size(path) / MAX_FILE_SIZE); //
-                byte[] data;
-                if (numParts == 1) {
-                    data = new byte[(int) Files.size(path)];
-                } else {
-                    data = new byte[MAX_FILE_SIZE];
-                }
+                int numParts = (int) Math.ceil((double) Files.size(path) / MAX_FILE_SIZE);
+                byte[] data = new byte[Math.min((int) Files.size(path), MAX_FILE_SIZE)]; // Если файл в один кусок - массив размером с файл
                 RandomAccessFile raf = new RandomAccessFile(path.toFile(), "r");
                 for (int i = 0; i < numParts; i++) {
                     raf.seek((long) i * MAX_FILE_SIZE);
                     int bytesRead = raf.read(data);
-                    byte[] realData = new byte[bytesRead]; // TODO Как то победить последний кусок
-                    System.arraycopy(data, 0, realData, 0, bytesRead);
-                    ctx.writeAndFlush(new BigFileMessage(path, realData, i, numParts));
+                    if (i == numParts - 1) { // обрезаем последний кусок по фактическому размеру
+                        byte[] realData = new byte[bytesRead];
+                        System.arraycopy(data, 0, realData, 0, bytesRead);
+//                        System.out.println("Отправляем последнюю часть " + (i + 1) + " размером " + bytesRead);
+                        ctx.writeAndFlush(new FileMessage(path, realData, i, numParts));
+                    } else {
+                        ctx.writeAndFlush(new FileMessage(path, data, i, numParts));
+//                        System.out.println("Отправляем часть " + (i + 1) + " из " + numParts + " размером " + bytesRead);
+                    }
                 }
                 raf.close();
             } catch (IOException e) {
@@ -137,7 +124,7 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    private boolean receiveBigFile(BigFileMessage msg) {
+    private boolean receiveFile(FileMessage msg) {
         if (msg.getFileName() == null || msg.getData() == null) {
             return false;
         } else {

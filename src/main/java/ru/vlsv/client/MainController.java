@@ -13,7 +13,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -36,14 +35,10 @@ public class MainController implements Initializable {
                 createDirIfNotExist(LOCAL_STORAGE);
                 while (true) {
                     AbstractMessage am = Network.readObject();
+
                     if (am instanceof FileMessage) {
                         FileMessage fm = (FileMessage) am;
-                        Files.write(Paths.get(LOCAL_STORAGE + "/" + fm.getFileName()), fm.getData(), StandardOpenOption.CREATE);
-                        refreshLocalFilesList();
-
-                    } else if (am instanceof BigFileMessage) {
-                        BigFileMessage bfm = (BigFileMessage) am;
-                        boolean lastPart = receiveBigFile(bfm);
+                        boolean lastPart = receiveFile(fm);
                         if (lastPart) refreshLocalFilesList();
 
                     } else if (am instanceof ListFilesMessage) {
@@ -96,16 +91,7 @@ public class MainController implements Initializable {
     }
 
     public void pressOnUploadBtn(ActionEvent actionEvent) {
-//        String fileName = localFilesList.getSelectionModel().getSelectedItem();
-//        if (fileName != null) {
-//            Path path = Paths.get(LOCAL_STORAGE + "/" + fileName);
-//            try {
-//                Network.sendMsg(new FileMessage(path));
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-        sendBigFile();
+        sendFile();
     }
 
     public void pressOnLocalDeleteBtn(ActionEvent actionEvent) {
@@ -134,32 +120,29 @@ public class MainController implements Initializable {
         Network.sendMsg(new ListFilesRequest());
     }
 
-    public void sendBigFile() {
+    private void sendFile() {
         String fileName = localFilesList.getSelectionModel().getSelectedItem();
-        System.out.println("Отправляем файл " + fileName);
         if (fileName != null) {
             Path path = Paths.get(LOCAL_STORAGE + "/" + fileName);
-            try {
-                // Делим файл на части и отправляем
-                // Определяем количество частей
-                int numParts = (int) Math.ceil((double) Files.size(path) / MAX_FILE_SIZE);
-                System.out.println("Количество частей: " + numParts);
+//            System.out.println("Отправляем файл " + fileName);
+            try { // Делим файл на части и отправляем
+                int numParts = (int) Math.ceil((double) Files.size(path) / MAX_FILE_SIZE); // Определяем количество частей
                 // Данные части файла
-                byte[] data;
-                if (numParts == 1) {
-                    data = new byte[(int) Files.size(path)];
-                } else {
-                    data = new byte[MAX_FILE_SIZE];
-                }
+                byte[] data = new byte[Math.min((int) Files.size(path), MAX_FILE_SIZE)]; // Если файл в один кусок - массив размером с файл
                 RandomAccessFile raf = new RandomAccessFile(path.toFile(), "r");
 
                 for (int i = 0; i < numParts; i++) {
                     raf.seek((long) i * MAX_FILE_SIZE);
                     int bytesRead = raf.read(data);
-                    byte[] realData = new byte[bytesRead];
-                    System.arraycopy(data, 0, realData, 0, bytesRead); // TODO Как то победить последний кусок
-                    Network.sendMsg(new BigFileMessage(path, realData, i, numParts));
-                    System.out.println("Отправили часть: " + (i + 1) + " из " + numParts + " - " + bytesRead);
+                    if (i == numParts - 1) { // обрезаем последний кусок по фактическому размеру
+                        byte[] realData = new byte[bytesRead];
+                        System.arraycopy(data, 0, realData, 0, bytesRead);
+//                        System.out.println("Отправляем последнюю часть " + (i + 1) + " размером " + bytesRead);
+                        Network.sendMsg(new FileMessage(path, realData, i, numParts));
+                    } else {
+                        Network.sendMsg(new FileMessage(path, data, i, numParts));
+//                        System.out.println("Отправляем часть " + (i + 1) + " из " + numParts + " размером " + bytesRead);
+                    }
                 }
                 raf.close();
             } catch (IOException e) {
@@ -168,24 +151,24 @@ public class MainController implements Initializable {
         }
     }
 
-    private boolean receiveBigFile(BigFileMessage bfm) {
-        if (bfm.getFileName() == null || bfm.getData() == null) {
+    private boolean receiveFile(FileMessage fm) {
+        if (fm.getFileName() == null || fm.getData() == null) {
             return false;
         } else {
-            Path path = Paths.get(LOCAL_STORAGE + "/" + bfm.getFileName());
+            Path path = Paths.get(LOCAL_STORAGE + "/" + fm.getFileName());
             try {
                 if (!Files.exists(path)) {
                     Files.createFile(path);
                 }
                 RandomAccessFile raf = new RandomAccessFile(path.toFile(), "rw");
-                raf.seek((long) bfm.getPartNum() * MAX_FILE_SIZE);
-                raf.write(bfm.getData());
+                raf.seek((long) fm.getPartNum() * MAX_FILE_SIZE);
+                raf.write(fm.getData());
                 raf.close();
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        return (bfm.getPartNum() == bfm.getPartCount() - 1);
+        return (fm.getPartNum() == fm.getPartCount() - 1);
     }
 }
