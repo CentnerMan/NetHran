@@ -8,7 +8,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
 
-import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.URL;
@@ -29,6 +28,7 @@ public class MainController implements Initializable {
     ListView<String> remoteFilesList;
 
     private static final String LOCAL_STORAGE = "client_storage";
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
