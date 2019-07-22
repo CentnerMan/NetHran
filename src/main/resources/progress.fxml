@@ -4,7 +4,9 @@
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="100.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.172-ea"
+<AnchorPane prefHeight="100.0" prefWidth="300.0"
+            style="-fx-background-color: linear-gradient(#fff 0%, #eee 10%, #ddd 90%, #bbb 100%);"
+            xmlns="http://javafx.com/javafx/8.0.172-ea"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.vlsv.client.ProgressController">
     <children>
         <ProgressBar fx:id="progressBar" layoutX="14.0" layoutY="63.0" prefHeight="25.0" prefWidth="273.0"

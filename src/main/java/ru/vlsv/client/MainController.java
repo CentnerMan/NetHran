@@ -150,13 +150,13 @@ public class MainController implements Initializable {
 //                        System.out.println("Отправляем последнюю часть " + (i + 1) + " размером " + bytesRead);
                         if (progressBar != null) {
                             progressBar.setProgress(1.0);
-                            System.out.println(progressBar.getProgress());
+//                            System.out.println(progressBar.getProgress());
                         }
                         Network.sendMsg(new FileMessage(path, realData, i, numParts));
                     } else {
                         if (progressBar != null) {
                             progressBar.setProgress(i * 1.0 / numParts);
-                            System.out.println(progressBar.getProgress());
+//                            System.out.println(progressBar.getProgress());
                         }
                         Network.sendMsg(new FileMessage(path, data, i, numParts));
 //                        System.out.println("Отправляем часть " + (i + 1) + " из " + numParts + " размером " + bytesRead);
