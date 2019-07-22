@@ -1,6 +1,7 @@
 package ru.vlsv.client;
 
 import javafx.scene.control.ProgressBar;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import ru.vlsv.common.*;
 
 import javafx.application.Platform;
@@ -9,16 +10,24 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
 
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import static ru.vlsv.common.KeyStoreUtils.*;
 import static ru.vlsv.common.Tools.*;
 
 public class MainController implements Initializable {
@@ -31,8 +40,43 @@ public class MainController implements Initializable {
 
     private static final String LOCAL_STORAGE = "client_storage";
 
+    private SecretKey originalKey = null;
+    private Cipher cipher = null;
+    byte[] ivBytes = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        // Генерация и сохранение пароля для текущего пользователя
+        Security.addProvider(new BouncyCastleProvider());
+        String keyFile = LoginController.currentUser + ".key";
+        File file = new File(keyFile);
+
+        if (!Files.exists(Paths.get(keyFile))) {
+            try {
+                //Generating a key:
+                originalKey = generateKey();
+                //Saving a key:
+                saveKey(originalKey, file);
+            } catch (NoSuchAlgorithmException | IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                //Loading a key:
+                originalKey = loadKey(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
+
+        //-------------------------------------------------------------
+
         Thread t = new Thread(() -> {
             try {
                 createDirIfNotExist(LOCAL_STORAGE);
@@ -133,6 +177,19 @@ public class MainController implements Initializable {
     private void sendFile(ProgressBar progressBar) {
         String fileName = localFilesList.getSelectionModel().getSelectedItem();
 
+        try {
+            cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (cipher != null) {
+                cipher.init(Cipher.ENCRYPT_MODE, originalKey, new IvParameterSpec(ivBytes));
+            }
+        } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        }
+
         if (fileName != null) {
             Path path = Paths.get(LOCAL_STORAGE + "/" + fileName);
 //            System.out.println("Отправляем файл " + fileName);
@@ -152,24 +209,38 @@ public class MainController implements Initializable {
                             progressBar.setProgress(1.0);
 //                            System.out.println(progressBar.getProgress());
                         }
-                        Network.sendMsg(new FileMessage(path, realData, i, numParts));
+                        byte[] realCryptoData = cipher.doFinal(realData);
+                        Network.sendMsg(new FileMessage(path, realCryptoData, i, numParts));
                     } else {
                         if (progressBar != null) {
                             progressBar.setProgress(i * 1.0 / numParts);
 //                            System.out.println(progressBar.getProgress());
                         }
-                        Network.sendMsg(new FileMessage(path, data, i, numParts));
+                        byte[] cryptoData = cipher.update(data);
+                        Network.sendMsg(new FileMessage(path, cryptoData, i, numParts));
 //                        System.out.println("Отправляем часть " + (i + 1) + " из " + numParts + " размером " + bytesRead);
                     }
                 }
                 raf.close();
-            } catch (IOException e) {
+            } catch (IOException | BadPaddingException | IllegalBlockSizeException e) {
                 e.printStackTrace();
             }
         }
     }
 
     private boolean receiveFile(FileMessage fm) {
+        try {
+            try {
+                cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+                e.printStackTrace();
+            }
+            if (cipher != null) {
+                cipher.init(Cipher.DECRYPT_MODE, originalKey, new IvParameterSpec(ivBytes));
+            }
+        } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        }
         if (fm.getFileName() == null || fm.getData() == null) {
             return false;
         } else {
@@ -180,10 +251,16 @@ public class MainController implements Initializable {
                 }
                 RandomAccessFile raf = new RandomAccessFile(path.toFile(), "rw");
                 raf.seek((long) fm.getPartNum() * MAX_FILE_SIZE);
-                raf.write(fm.getData());
+                if ((fm.getPartNum() + 1) == fm.getPartCount()) {
+                    byte[] realCryptoData = cipher.doFinal(fm.getData());
+                    raf.write(realCryptoData);
+                } else {
+                    byte[] realCryptoData = cipher.update(fm.getData());
+                    raf.write(realCryptoData);
+                }
                 raf.close();
 
-            } catch (IOException e) {
+            } catch (IOException | IllegalBlockSizeException | BadPaddingException e) {
                 e.printStackTrace();
             }
         }

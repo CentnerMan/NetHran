@@ -33,20 +33,11 @@ public class ProgressController implements Initializable {
         return progressBar;
     }
 
-    /**
-     * Closes Progress window
-     */
     public void close() {
         if (Platform.isFxApplicationThread()) ((Stage) infoLabel.getScene().getWindow()).close();
         else Platform.runLater(() -> ((Stage) infoLabel.getScene().getWindow()).close());
     }
 
-    /**
-     * Creates a stage to show
-     *
-     * @param parentControllerClass a parent class that opens the window
-     * @return a ProgressController instance
-     */
     public static ProgressController showProgressStage(Class parentControllerClass) {
         Parent root;
         try {
@@ -65,5 +56,4 @@ public class ProgressController implements Initializable {
         }
         return null;
     }
-
 }

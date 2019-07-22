@@ -36,6 +36,8 @@ public class LoginController implements Initializable {
     @FXML
     PasswordField userPassword;
 
+    public static String currentUser;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Network.start();
@@ -46,6 +48,7 @@ public class LoginController implements Initializable {
                     if (am instanceof AuthorizationOK) {
                         // Авторизация удалась - переключаем сцену
                         System.out.println("Авторизация удалась");
+                        currentUser = userLogin.getText();
                         changeSceneToMain();
                         break;
                     } else if (am instanceof AuthorizationFalse) {
