@@ -55,6 +55,7 @@ public class ProgressController implements Initializable {
             Stage stage = new Stage();
             Scene scene = new Scene(root);
             stage.setScene(scene);
+            stage.centerOnScreen();
             stage.setResizable(false);
             stage.alwaysOnTopProperty();
             stage.show();

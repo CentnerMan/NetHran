@@ -31,7 +31,6 @@ public class MainController implements Initializable {
 
     private static final String LOCAL_STORAGE = "client_storage";
 
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Thread t = new Thread(() -> {
@@ -41,6 +40,7 @@ public class MainController implements Initializable {
                     AbstractMessage am = Network.readObject();
 
                     if (am instanceof FileMessage) {
+
                         FileMessage fm = (FileMessage) am;
                         boolean lastPart = receiveFile(fm);
                         if (lastPart) refreshLocalFilesList();
