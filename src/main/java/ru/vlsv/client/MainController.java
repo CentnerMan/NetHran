@@ -1,19 +1,21 @@
 package ru.vlsv.client;
 
+import javafx.scene.control.ProgressBar;
 import ru.vlsv.common.*;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
 
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static ru.vlsv.common.Tools.*;
@@ -30,6 +32,7 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
         Thread t = new Thread(() -> {
             try {
                 createDirIfNotExist(LOCAL_STORAGE);
@@ -37,9 +40,12 @@ public class MainController implements Initializable {
                     AbstractMessage am = Network.readObject();
 
                     if (am instanceof FileMessage) {
+
                         FileMessage fm = (FileMessage) am;
                         boolean lastPart = receiveFile(fm);
-                        if (lastPart) refreshLocalFilesList();
+                        if (lastPart) {
+                            refreshLocalFilesList();
+                        }
 
                     } else if (am instanceof ListFilesMessage) {
                         ListFilesMessage lfm = (ListFilesMessage) am;
@@ -91,7 +97,13 @@ public class MainController implements Initializable {
     }
 
     public void pressOnUploadBtn(ActionEvent actionEvent) {
-        sendFile();
+        ProgressController pc = ProgressController.showProgressStage(this.getClass());
+        new Thread(() -> {
+            sendFile(Objects.requireNonNull(pc).getProgressBar());
+            pc.close();
+            refreshLocalFilesList();
+        }).start();
+//        sendFile();
     }
 
     public void pressOnLocalDeleteBtn(ActionEvent actionEvent) {
@@ -120,28 +132,32 @@ public class MainController implements Initializable {
         Network.sendMsg(new ListFilesRequest());
     }
 
-    private void sendFile() {
+    private void sendFile(ProgressBar progressBar) {
+
         String fileName = localFilesList.getSelectionModel().getSelectedItem();
+
         if (fileName != null) {
             Path path = Paths.get(LOCAL_STORAGE + "/" + fileName);
-//            System.out.println("Отправляем файл " + fileName);
             try { // Делим файл на части и отправляем
                 int numParts = (int) Math.ceil((double) Files.size(path) / MAX_FILE_SIZE); // Определяем количество частей
                 // Данные части файла
                 byte[] data = new byte[Math.min((int) Files.size(path), MAX_FILE_SIZE)]; // Если файл в один кусок - массив размером с файл
                 RandomAccessFile raf = new RandomAccessFile(path.toFile(), "r");
-
                 for (int i = 0; i < numParts; i++) {
                     raf.seek((long) i * MAX_FILE_SIZE);
                     int bytesRead = raf.read(data);
                     if (i == numParts - 1) { // обрезаем последний кусок по фактическому размеру
                         byte[] realData = new byte[bytesRead];
                         System.arraycopy(data, 0, realData, 0, bytesRead);
-//                        System.out.println("Отправляем последнюю часть " + (i + 1) + " размером " + bytesRead);
+                        if (progressBar != null) {
+                            progressBar.setProgress(1.0);
+                        }
                         Network.sendMsg(new FileMessage(path, realData, i, numParts));
                     } else {
+                        if (progressBar != null) {
+                            progressBar.setProgress(i * 1.0 / numParts);
+                        }
                         Network.sendMsg(new FileMessage(path, data, i, numParts));
-//                        System.out.println("Отправляем часть " + (i + 1) + " из " + numParts + " размером " + bytesRead);
                     }
                 }
                 raf.close();
@@ -171,4 +187,5 @@ public class MainController implements Initializable {
         }
         return (fm.getPartNum() == fm.getPartCount() - 1);
     }
+
 }

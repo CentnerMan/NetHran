@@ -9,5 +9,5 @@ package ru.vlsv.common;
  */
 
 public class ListFilesRequest extends AbstractMessage {
-
+    private static final long serialVersionUID = -6071209919129895939L;
 }

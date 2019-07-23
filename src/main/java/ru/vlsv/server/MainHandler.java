@@ -12,7 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import static ru.vlsv.common.Tools.MAX_FILE_SIZE;
+import static ru.vlsv.common.Tools.*;
 
 public class MainHandler extends ChannelInboundHandlerAdapter {
 
@@ -28,7 +28,7 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
 //            AuthService.addUser("admin", "admin"); // Первоначальная инициализация БД
 //            AuthService.addUser("test", "test");
 //            AuthService.addUser("user", "user");
-            Tools.createDirIfNotExist(SERVER_STORAGE); //Создаем общую папку на сервере
+            createDirIfNotExist(SERVER_STORAGE); //Создаем общую папку на сервере
 
             if (!authorization) {
                 if (msg instanceof AuthorizationRequest) {
@@ -43,7 +43,7 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
                         authorization = true;
 
                         currentPath = currentPath + currentLogin; // Определяем рабочий каталог
-                        Tools.createDirIfNotExist(currentPath); // Если нет рабочего каталога пользователя - создаем
+                        createDirIfNotExist(currentPath); // Если нет рабочего каталога пользователя - создаем
 
                     } else {
                         AuthorizationFalse authFalse = new AuthorizationFalse();

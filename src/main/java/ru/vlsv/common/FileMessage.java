@@ -11,6 +11,7 @@ import java.nio.file.Path;
  */
 
 public class FileMessage extends AbstractMessage {
+    private static final long serialVersionUID = -2177803426247643842L;
     private String fileName;
     private byte[] data;
     private int partNum;

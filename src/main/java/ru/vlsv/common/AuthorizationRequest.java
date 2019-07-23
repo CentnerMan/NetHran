@@ -10,6 +10,7 @@ package ru.vlsv.common;
 
 public class AuthorizationRequest extends AbstractMessage{
 
+    private static final long serialVersionUID = -2026836063897516543L;
     private String name;
     private String password;
 
