@@ -1,4 +1,4 @@
-package ru.vlsv.common;
+package ru.vlsv.Cryptography;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
@@ -6,14 +6,6 @@ import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.*;
 import java.security.*;
-
-/**
- * Java, NetHran.
- *
- * @author Anatoly Lebedev
- * @version 1.0.0 21.07.2019
- * @link https://github.com/Centnerman
- */
 
 public class EncriptionDecriptionExample {
 

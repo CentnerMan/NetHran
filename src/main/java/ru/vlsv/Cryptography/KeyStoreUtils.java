@@ -1,4 +1,4 @@
-package ru.vlsv.common;
+package ru.vlsv.Cryptography;
 
 import static org.apache.commons.codec.binary.Hex.decodeHex;
 import static org.apache.commons.codec.binary.Hex.encodeHex;
