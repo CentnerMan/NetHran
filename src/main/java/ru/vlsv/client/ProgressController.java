@@ -25,8 +25,7 @@ public class ProgressController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         progressBar.setProgress(0f);
-        String COPYING = "Идет процесс копирования...";
-        infoLabel.setText(COPYING);
+        infoLabel.setText("Идет процесс копирования...");
     }
 
     public ProgressBar getProgressBar() {
@@ -46,10 +45,10 @@ public class ProgressController implements Initializable {
             Stage stage = new Stage();
             Scene scene = new Scene(root);
             stage.setScene(scene);
-            stage.centerOnScreen();
             stage.setResizable(false);
             stage.alwaysOnTopProperty();
             stage.show();
+            stage.centerOnScreen();
             return fxmlLoader.getController();
         } catch (IOException e) {
             e.printStackTrace();
