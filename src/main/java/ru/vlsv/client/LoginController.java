@@ -11,7 +11,10 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import ru.vlsv.common.*;
+import ru.vlsv.common.AbstractMessage;
+import ru.vlsv.common.AuthorizationFalse;
+import ru.vlsv.common.AuthorizationOK;
+import ru.vlsv.common.AuthorizationRequest;
 
 import java.io.IOException;
 import java.net.URL;

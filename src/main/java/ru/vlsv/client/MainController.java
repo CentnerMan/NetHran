@@ -1,15 +1,15 @@
 package ru.vlsv.client;
 
-import javafx.scene.control.ProgressBar;
-import ru.vlsv.common.*;
-
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
+import ru.vlsv.common.*;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,7 +18,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import static ru.vlsv.common.Tools.*;
+import static ru.vlsv.common.Tools.MAX_FILE_SIZE;
+import static ru.vlsv.common.Tools.createDirIfNotExist;
 
 public class MainController implements Initializable {
 

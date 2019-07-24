@@ -8,7 +8,7 @@ package ru.vlsv.common;
  * @link https://github.com/Centnerman
  */
 
-public class AuthorizationRequest extends AbstractMessage{
+public class AuthorizationRequest extends AbstractMessage {
 
     private static final long serialVersionUID = -2026836063897516543L;
     private String name;

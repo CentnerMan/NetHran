@@ -1,8 +1,8 @@
 package ru.vlsv.client;
 
-import ru.vlsv.common.AbstractMessage;
 import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
+import ru.vlsv.common.AbstractMessage;
 import ru.vlsv.common.Tools;
 
 import java.io.IOException;
