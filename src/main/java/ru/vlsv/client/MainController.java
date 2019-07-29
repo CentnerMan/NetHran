@@ -17,6 +17,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static ru.vlsv.common.Tools.MAX_FILE_SIZE;
 import static ru.vlsv.common.Tools.createDirIfNotExist;
@@ -98,13 +101,7 @@ public class MainController implements Initializable {
     }
 
     public void pressOnUploadBtn(ActionEvent actionEvent) {
-        ProgressController pc = ProgressController.showProgressStage(this.getClass());
-        new Thread(() -> {
-            sendFile(Objects.requireNonNull(pc).getProgressBar());
-            pc.close();
-            refreshLocalFilesList();
-        }).start();
-//        sendFile();
+        sendFile();
     }
 
     public void pressOnLocalDeleteBtn(ActionEvent actionEvent) {
@@ -133,7 +130,7 @@ public class MainController implements Initializable {
         Network.sendMsg(new ListFilesRequest());
     }
 
-    private void sendFile(ProgressBar progressBar) {
+    public void sendFile() {
 
         String fileName = localFilesList.getSelectionModel().getSelectedItem();
 
@@ -150,14 +147,8 @@ public class MainController implements Initializable {
                     if (i == numParts - 1) { // обрезаем последний кусок по фактическому размеру
                         byte[] realData = new byte[bytesRead];
                         System.arraycopy(data, 0, realData, 0, bytesRead);
-                        if (progressBar != null) {
-                            progressBar.setProgress(1.0);
-                        }
                         Network.sendMsg(new FileMessage(path, realData, i, numParts));
                     } else {
-                        if (progressBar != null) {
-                            progressBar.setProgress(i * 1.0 / numParts);
-                        }
                         Network.sendMsg(new FileMessage(path, data, i, numParts));
                     }
                 }
