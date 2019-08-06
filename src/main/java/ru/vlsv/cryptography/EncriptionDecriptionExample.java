@@ -1,4 +1,4 @@
-package ru.vlsv.Cryptography;
+package ru.vlsv.cryptography;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 

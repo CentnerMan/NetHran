@@ -1,4 +1,4 @@
-package ru.vlsv.Cryptography;
+package ru.vlsv.cryptography;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import ru.vlsv.client.LoginController;
@@ -12,7 +12,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 
-import static ru.vlsv.Cryptography.KeyStoreUtils.*;
+import static ru.vlsv.cryptography.KeyStoreUtils.*;
 
 /**
  * Java, NetHran.
